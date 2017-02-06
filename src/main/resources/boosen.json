@@ -1,0 +1,32 @@
+{
+  "creationTime" : "2016-10-25T15:48:59.718+0200",
+  "modificationTime" : "2016-10-25T15:48:59.718+0200",
+  "createdByUser" : "n/a",
+  "modifiedByUser" : "n/a",
+  "id" : null,
+  "userid" : "haarländer",
+  "password" : "markus",
+  "firstName" : "Markus",
+  "lastName" : "Haarländer",
+  "email" : "haarländer@mpdl.mpg.de",
+  "active" : true,
+  "ouid" : "vm44.mpdl.mpg.de/inge/organizational_units/organization/pure_persistent25",
+  "grants" : [ {
+    "creationTime" : "2016-10-25T12:53:24.555+0200",
+    "modificationTime" : "2016-10-25T12:53:24.555+0200",
+    "createdByUser" : "n/a",
+    "modifiedByUser" : "n/a",
+    "id" : 8,
+    "role" : {
+      "creationTime" : "2016-10-25T12:39:51.447+0200",
+      "modificationTime" : "2016-10-25T12:39:51.447+0200",
+      "createdByUser" : "n/a",
+      "modifiedByUser" : "n/a",
+      "id" : 1,
+      "name" : "DEPOSITOR"
+    },
+    "targetType" : "CONTEXT",
+    "targetId" : "vm44.mpdl.mpg.de/inge/pure_contexts/context/pure_28054"
+  } ],
+  "version" : 0
+}

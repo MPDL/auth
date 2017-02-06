@@ -1,0 +1,18 @@
+{"id" : null,
+ "userid" : "frank",
+ "password" : "wilhelm",
+ "firstName" : "Wilhelm",
+ "lastName" : "Frank",
+ "email" : "frank@mpdl.mpg.de",
+ "ouid" : "vm44.mpdl.mpg.de/inge/organizational_units/organization/pure_persistent25",
+ "active" : true,
+ "grants" : [{
+  "id" : 10,
+  "role" : {
+    "id" : 5,
+    "name" : "SYSADMIN"
+  },
+  "targetType" : "CONTEXT",
+  "targetId" : "all"
+}],
+ "version" : 0}
