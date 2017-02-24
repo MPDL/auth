@@ -53,7 +53,7 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
 			}
 			List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 			user.getGrants().forEach(grant -> list.add(new SimpleGrantedAuthority("ROLE_"+grant.getRole().getName())));
-			System.out.println("TokenAuthenticationProvider: " + user.getUserid() + "  with ROLES:  " + list );
+			// System.out.println("TokenAuthenticationProvider: " + user.getUserid() + "  with ROLES:  " + list );
 			return new AuthenticatedUser(user.getId(), user.getUserid(), token, list);
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();

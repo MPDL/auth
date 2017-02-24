@@ -47,7 +47,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 		super.successfulAuthentication(request, response, chain, authResult);
-		System.out.println("TokenAuthenticationFilter success " + authResult.isAuthenticated());
+		// System.out.println("TokenAuthenticationFilter success " + authResult.isAuthenticated());
 		
 		chain.doFilter(request, response);
 	}

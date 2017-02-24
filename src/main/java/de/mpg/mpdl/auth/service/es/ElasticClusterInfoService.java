@@ -1,5 +1,6 @@
 package de.mpg.mpdl.auth.service.es;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ElasticClusterInfoService {
+	
+	private static final String MAPPING_JSON_PATH = "/home/frank/data/git/auth/src/main/resources/json/";
 	
 	private static ClusterStateResponse clusterStateResponse() {
 		Client c = ElasticTransportClient.start();
@@ -66,7 +69,7 @@ public class ElasticClusterInfoService {
 		
 		try {
 			//om.writerWithDefaultPrettyPrinter().writeValue(System.out, idxMeta);
-			om.writerWithDefaultPrettyPrinter().writeValue(System.out, mapMeta.getSourceAsMap());
+			om.writerWithDefaultPrettyPrinter().writeValue(new File(MAPPING_JSON_PATH + "item_mapping.json"), mapMeta.getSourceAsMap());
 			
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block

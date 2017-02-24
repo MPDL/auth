@@ -16,7 +16,7 @@ public class CORSFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
-		System.out.println("CORS " + request.getMethod());
+		// System.out.println("CORS " + request.getMethod());
 		if ("OPTIONS".equals(request.getMethod())) {
 			response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, DELETE");
 			response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");

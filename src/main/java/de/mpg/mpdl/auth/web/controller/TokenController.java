@@ -53,7 +53,7 @@ public class TokenController {
     	return loginSevice.login(credentials)
     			.map(user -> {
     				try {
-    					System.out.println("TokenController returns token 4: " + user.getUserid());
+    					// System.out.println("TokenController returns token 4: " + user.getUserid());
     					response.setHeader("Token", tokenProvider.getToken(user));
     				} catch(Exception e) {
     					throw new RuntimeException(e);

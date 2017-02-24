@@ -7,6 +7,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,7 @@ import de.mpg.mpdl.auth.service.DateTimeService;
 @ComponentScan(basePackages = {"de.mpg.mpdl.auth"})
 @PropertySources({
 	@PropertySource("classpath:jpa.properties"),
-	@PropertySource(value = "file:${catalina.home.dir}/conf/auth.properties", ignoreResourceNotFound = true)
+ 	@PropertySource(value = "file:${catalina.home.dir}/conf/auth.properties", ignoreResourceNotFound = true)
 //	@PropertySource(value = "file:${catalina.home}/conf/auth.properties", ignoreResourceNotFound = true)
 
 })
@@ -65,21 +66,18 @@ public class AuthConfiguration {
     public Client client() {
 
       Settings settings =
-          Settings.settingsBuilder().put("cluster.name", clusterName)
+          Settings.builder().put("cluster.name", clusterName)
               //.put("client.transport.sniff", true)
               .build();
-      System.out.println("IPs from properties: " + transportIps);
-      TransportClient client = new TransportClient.Builder().settings(settings).build();
-      System.out.println("Settings:");
-      client.settings().getAsMap().forEach((k,v) -> System.out.println(k + "   " + v));
+      TransportClient client = new PreBuiltTransportClient(settings);
+      // client.settings().getAsMap().forEach((k,v) -> System.out.println(k + "   " + v));
       for (String ip : transportIps.split(" ")) {
         String addr = ip.split(":")[0];
         int port = Integer.valueOf(ip.split(":")[1]);
         try {
           client
               .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(addr), port));
-          System.out.println("Settings:");
-          client.settings().getAsMap().forEach((k,v) -> System.out.println(k + "   " + v));
+         //  client.settings().getAsMap().forEach((k,v) -> System.out.println(k + "   " + v));
         } catch (UnknownHostException e) {
           e.printStackTrace();
         }

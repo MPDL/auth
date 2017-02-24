@@ -48,7 +48,7 @@ public class ElasticSearchProviderService {
 			String id = grant.getTargetId().substring(grant.getTargetId().lastIndexOf("/") +1);
 			System.out.println("getting name of " + id);
 			GetResponse response = client.prepareGet(ctx_index_name, ctx_index_type, id)
-					.setFields("name").get();
+					.setStoredFields("name").get();
 			System.out.println(response.getFields().get("name").getValue());
 			} else {
 				System.out.println("grant " + grant.getId() + " has role " + grant.getRole().getName());

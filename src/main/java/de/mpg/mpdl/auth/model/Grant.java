@@ -9,31 +9,33 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "grants")
+@Table(name = "grants", uniqueConstraints = { @UniqueConstraint(columnNames = { "role", "target_id" }) })
 public class Grant extends AbstractEntity {
-	
+
 	public enum TargetType {
 		CONTEXT, ITEM
 	}
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="role", nullable=false)
+
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "role", nullable = false)
 	private UserRole role;
-	
-	@Column(name="target_type", nullable=false)
+
+	@Column(name = "target_type", nullable = false)
 	private TargetType targetType;
-	
-	@Column(name="target_id", nullable=false)
+
+	@Column(name = "target_id", nullable = false)
 	private String targetId;
-	
-	Grant() {}
-	
+
+	Grant() {
+	}
+
 	public Grant(UserRole role, TargetType targetType, String targetId) {
 		this.role = role;
 		this.targetType = targetType;
