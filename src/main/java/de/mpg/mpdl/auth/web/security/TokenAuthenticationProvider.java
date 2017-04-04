@@ -39,8 +39,9 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
 	@Override
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-
+		
 	}
+	
 	
 	protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication)
 			throws AuthenticationException {

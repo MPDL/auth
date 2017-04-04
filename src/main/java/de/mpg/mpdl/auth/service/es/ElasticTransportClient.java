@@ -69,11 +69,11 @@ public class ElasticTransportClient {
 	}
 	
 	public static RestClient rest() {
-		RestClient client = RestClient.builder(new HttpHost("b253.test")).build();
+		RestClient client = RestClient.builder(new HttpHost("dev.inge.mpdl.mpg.de", 443, "https")).build();
 		return client;
 	}
 
-	public static void createIndex(String indexName) {
+	public static void createIndex(String indexName, String settings_json) {
 		Client c = start();
 
 		IndicesExistsResponse res = c.admin().indices().prepareExists(indexName).execute().actionGet();
@@ -83,6 +83,17 @@ public class ElasticTransportClient {
 		}
 
 		CreateIndexRequestBuilder indexReq = c.admin().indices().prepareCreate(indexName);
+		if (settings_json != null) {
+			java.nio.file.Path path = Paths.get(MAPPING_JSON_PATH + settings_json);
+			byte[] settings = null;
+			try {
+				settings = Files.readAllBytes(path);
+				indexReq.setSource(settings);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		CreateIndexResponse indexResp = indexReq.execute().actionGet();
 
 		System.out.println("created index " + indexName + ": " + indexResp.isAcknowledged());
@@ -210,7 +221,7 @@ public static void saveExistingMappingToFile(String indexname, String type, Stri
 		RestClient client = rest();
 		byte[] stream = null;;
 		try {
-			stream = mapper.writeValueAsBytes(reindexBody("rest_20170207", "rest_20170209"));
+			stream = mapper.writeValueAsBytes(reindexBody("pure_store", "pure_store_backup"));
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -290,21 +301,27 @@ public static void saveExistingMappingToFile(String indexname, String type, Stri
 	public static void main(String... strings) {
 		
 		// String query = "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"metadata.genre\":\"ARTICLE\"}}],\"filter\":[{\"script\":{\"script\":{\"inline\":\"doc['latestVersion.versionNumber'].value == doc['version.versionNumber'].value\",\"lang\":\"painless\"},\"boost\":1.0}}],\"disable_coord\":false,\"adjust_pure_negative\":true,\"boost\":1.0,\"_name\":\"query\"}}}";
+		
 		/*
 		QueryBuilder qb = prepareQuery();
-		
 		String query = getQueryString(qb);
 		System.out.println(query);
 		HttpEntity e = EntityBuilder.create().setText(query).build();
 		restDemo(e);
 		*/
-		//saveExistingMappingToFile("rest_20170207", "item", "item_mapping.json");
-		//deleteIndex("rest_20170207");
-		//createIndex("pure_store");
+		TransportClient client = start();
+		//ElasticSearchService.getInfo(client, "pure_search");
+		//saveExistingMappingToFile("user_accounts", "account", "user_mapping.json");
+		//deleteIndex("user4auto");
+		//createIndex("users4auto", "user4auto_settings.json");
 		//ElasticClusterInfoService.indexInfo("pure_20170203", "item");
-		//addMapping("pure_store", "item", "item_mapping.json");
+		//addMapping("users4auto", "user", "user4auto_mapping.json");
 		//ElasticClusterInfoService.listIndices().forEach(s -> System.out.println(s));
-		ElasticSearchService.scroll(start(), "pure_store");
+		//ElasticSearchService.scroll(start(), "pure_store");
+		//ElasticSearchService.reindexl(client, "pure_store", "pure_store_20170320");
+		//reindexViaRest();
+		ElasticSearchService.getInfo(client, "pure_search");
+		client.close();
 		// reindexViaRest();
 	}
 }

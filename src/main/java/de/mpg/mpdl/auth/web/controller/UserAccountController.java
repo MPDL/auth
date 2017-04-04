@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,10 +35,13 @@ public class UserAccountController {
 	
 	private ProjectionFactory projectionFactory;
 	
+	private PasswordEncoder passwordEncoder;
+	
 	@Autowired
-	public UserAccountController(UserRepository repo, ProjectionFactory factory) {
+	public UserAccountController(UserRepository repo, ProjectionFactory factory, PasswordEncoder encoder) {
 		this.repo = repo;
 		this.projectionFactory = factory;
+		this.passwordEncoder = encoder;
 	}
 	
 	@PreAuthorize("hasRole('ROLE_SYSADMIN')")
@@ -46,6 +50,8 @@ public class UserAccountController {
 		if (repo.findByUserid(input.getUserid()).isPresent()) {
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
 		}
+		String encoded = passwordEncoder.encode(input.getPassword());
+		input.setPassword(encoded);
 		UserAccount user = this.repo.save(input);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ServletUriComponentsBuilder
@@ -85,6 +91,8 @@ public class UserAccountController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody UserAccount input) {
 		this.validateUser(input.getUserid());
+		String encoded = passwordEncoder.encode(input.getPassword());
+		input.setPassword(encoded);
 		UserAccount user = this.repo.save(input);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ServletUriComponentsBuilder

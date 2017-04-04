@@ -24,10 +24,11 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ElasticSearchService {
 
-	public static void reindexl(TransportClient client, String index) {
+	public static void reindexl(TransportClient client, String srcIndex, String destIndex) {
 
 		ObjectMapper om = new ObjectMapper();
 		JsonFactory jf = new JsonFactory();
@@ -70,7 +71,7 @@ public class ElasticSearchService {
 
 		QueryBuilder qb = QueryBuilders.matchAllQuery();
 
-		SearchResponse response = client.prepareSearch("pure_store")
+		SearchResponse response = client.prepareSearch(srcIndex)
 				// .addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
 				.setScroll(new TimeValue(60000)).setQuery(qb).setSize(chunkSize).get();
 
@@ -87,44 +88,19 @@ public class ElasticSearchService {
 				try {
 					parser = jf.createParser(hit.getSourceAsString());
 					JsonNode item = om.readTree(parser);
-					/*
-					 * objectId =
-					 * item.get("version").get("objectId").textValue(); objectId
-					 * = objectId.substring(objectId.indexOf(":") + 1); vernum =
-					 * item.get("version").get("versionNumber").asText();
-					 * pure_id = "pure_"+objectId+"_"+vernum;
-					 * 
-					 * IndexRequest request = new IndexRequest(index,
-					 * hit.getType(), pure_id); request.source(hit.getSource());
-					 */
-					version = item.get("version").get("versionNumber").asText();
-					release = item.get("latestRelease").get("versionNumber").asText();
-					latest = item.get("latestVersion").get("versionNumber").asText();
+					//System.out.println(item.get("version").get("objectId").textValue());
+						change(item, "objectId");
+						change(item, "contentModel");
 
-					IndexRequest request = null;
-					if (version.equals(release) && version.equals(latest)) {
+						//System.out.println(item.get("version").get("objectId").textValue());
+					
 						indexList.add(hit.getId());
-						request = new IndexRequest(index, hit.getType(), hit.getId());
-						request.source(hit.getSource());
+						IndexRequest request = new IndexRequest(destIndex, hit.getType(), hit.getId());
+						request.source(item.toString());
 						processor.add(request);
-
-					} else {
-						if (version.equals(release)) {
-							indexList.add(hit.getId());
-							request = new IndexRequest(index, hit.getType(), hit.getId());
-							request.source(hit.getSource());
-							processor.add(request);
-
-						} else {
-							if (version.equals(latest)) {
-								indexList.add(hit.getId());
-								request = new IndexRequest(index, hit.getType(), hit.getId());
-								request.source(hit.getSource());
-								processor.add(request);
-
-							}
-						}
-					}
+						
+						
+						
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -221,7 +197,9 @@ public class ElasticSearchService {
 
 		QueryBuilder qb = QueryBuilders.matchAllQuery();
 
-		SearchResponse response = tc.prepareSearch(index).setQuery(qb).get();
+		SearchResponse response = tc.prepareSearch(index).setQuery(qb).setSize(3).get();
+		
+		System.out.println(response.getHits().getTotalHits());
 
 		for (SearchHit hit : response.getHits().getHits()) {
 			try {
@@ -233,6 +211,12 @@ public class ElasticSearchService {
 				String pure_id = "pure_" + objectId + "_" + vernum;
 
 				System.out.println(hit.getId() + "   " + pure_id);
+				
+				change(item, "objectId");
+				change(item, "contentModel");
+				//System.out.println(item.textValue());
+				//System.out.println(item.toString());
+				//om.writerWithDefaultPrettyPrinter().writeValue(System.out, item);				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -240,4 +224,18 @@ public class ElasticSearchService {
 		}
 
 	}
+	
+	public static void change(JsonNode parent, String fieldName) {
+        if (parent.has(fieldName)) {
+        	String value = parent.get(fieldName).asText();
+        	String newValue = "pure_"+value.substring(value.lastIndexOf(":") +1);
+        	// System.out.println(value + " is now " + newValue);
+            ((ObjectNode) parent).put(fieldName, newValue);
+        }
+
+        for (JsonNode child : parent) {
+            change(child, fieldName);
+        }
+	}
+        
 }
